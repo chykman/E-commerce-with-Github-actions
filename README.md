@@ -42,7 +42,12 @@
 
   ## Front end web application setup
 
-  * Create simple web application 
+  * Create simple web application
+ 
+  * npx create-react-app .
+  *  npm install axios
+    ![image](https://github.com/user-attachments/assets/a2b64934-3794-4b4a-b49b-554b88d54111)
+
 
 
 
