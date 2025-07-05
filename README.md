@@ -48,6 +48,12 @@
   *  npm install axios
     ![image](https://github.com/user-attachments/assets/a2b64934-3794-4b4a-b49b-554b88d54111)
 
+* Both folders have been setup
+  ![image](https://github.com/user-attachments/assets/687e2153-0547-43b4-bf24-69aa57f509ec)
+
+
+## CI Workflow
+
 
 
 
