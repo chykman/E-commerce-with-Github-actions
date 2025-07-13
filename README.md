@@ -54,6 +54,136 @@
 
 ## CI Workflow
 
+- Workflow that installs dependencies, runs tests and builds the application
+
+       ```yaml
+       name: CI/CD Pipeline
+
+         on:
+       push:
+         branches: [main]
+
+         jobs:
+          build-and-test:
+          runs-on: ubuntu-latest
+          steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Backend
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm install
+
+      - name: Run backend tests
+        working-directory: ./server
+        run: npm test
+
+      # Frontend
+      - name: Install frontend dependencies
+        working-directory: ./public
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./public
+        run: npm run build
+
+          ```
+          ---
+
+  ## Docker integration
+
+* Create dockerfiles for the frontend and backend folders
+  <img width="986" height="482" alt="image" src="https://github.com/user-attachments/assets/d548ab54-9682-40ae-b01a-e565947cc7c0" />
+
+  <img width="1136" height="673" alt="image" src="https://github.com/user-attachments/assets/a5289b8e-a09a-4e91-9965-2b6c7a339326" />
+
+* Modify your workflow to build docker the images
+
+  
+
+      # Dockerisation
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./server/Dockerfile
+          push: true
+          tags: chykmanish/ecommerce-app-backend:latest
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./public
+          file: ./public/Dockerfile
+          push: true
+          tags: chykmanish/ecommerce-app-frontend:latest
+
+  ## Deploy to the Cloud
+  * Choose a Cloud platform
+    <img width="1920" height="852" alt="image" src="https://github.com/user-attachments/assets/adb3be62-1063-4243-9456-8987c5542b5d" />
+ ---
+
+        Deployment
+      - name: Deploy Containers
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_IP_ADDRESS }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -ex
+            echo "=== Starting Deployment ==="
+            cd /home/ubuntu
+            
+            # Stop and clean up old containers
+            docker-compose down || true
+            docker system prune -af  # Cleanup unused images
+            docker pull chykmanish/ecommerce-app-backend:latest
+            docker pull chykmanish/ecommerce-app-frontend:latest
+            docker-compose up -d --force-recreate
+            echo "=== Running Containers ==="
+            docker ps -a
+            echo "=== Network Status ==="
+            docker network ls
+---
+
+* Ensure all required credentials are stored github secrets
+
+  <img width="1920" height="941" alt="image" src="https://github.com/user-attachments/assets/51d4775a-87ac-4cd1-ae76-db6fb6f7bcbd" />
+
+  ## Configure workflow to deploy updates when codes are pushed to main
+
+  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/60c21d2e-556a-4f7a-9132-8d60c387f4a2" />
+
+  <img width="1920" height="1008" alt="image" src="https://github.com/user-attachments/assets/64bee24a-bb7f-4eb4-b788-1a3b99927e48" />
+
+  ## Implementing caching
+  * It was implemented after the steps for installing the modules so that it can be cached
+    
+  <img width="1920" height="1008" alt="image" src="https://github.com/user-attachments/assets/c4fc6332-645a-49f6-81c7-74021d9bcefd" />
+
+  <img width="1920" height="827" alt="image" src="https://github.com/user-attachments/assets/2f82df57-eb06-4993-98fe-078325622eb8" />
+
+
+
+
+
+
 
 
 
